@@ -16,11 +16,13 @@ public class DeadLock
         int count = 0;
         int numRe = 0;
         char[][] matrix = new char[1000][1000];
+        String fileName = "Deadlock/TestCase18.txt";
+        System.out.println("Test case: "+fileName);
         
         //read file and split by ","
         try 
         {
-            File file = new File("Deadlock/TestCase02.txt");
+            File file = new File(fileName);
             StringBuffer stringBuffer;
             try (FileReader fileReader = new FileReader(file)) 
             {
@@ -252,8 +254,8 @@ public class DeadLock
                 {
                     if(L.size()-2 >= 0)
                     {
-                        System.out.println("DEAD END of " + N);
-                        System.out.println("");
+//                        System.out.println("DEAD END of " + N);
+//                        System.out.println("");
                         L.remove(L.size()-1);
                         N = L.get(L.size()-1).toString();
                         L.remove(L.size()-1);
@@ -294,6 +296,7 @@ public class DeadLock
         // if No deadlock is detected., it will display that the program find 0 cycle.
         else
         {
+            System.out.println();
             System.out.println("No deadlock is detected.");
             System.out.println("The program find 0 cycle.");
         }
