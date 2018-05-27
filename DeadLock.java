@@ -1,21 +1,26 @@
 /**
+ * A program to detect whether or not the given system contains a deadlock. If the deadlock is detected, program will return the list of processes and resources that involve in the deadlock.
  * Created by
  * Peerachai Banyongrakkul Sec.1 5988070
  * Boonyada Lojanarungsiri Sec.1 5988153
+ * 3/5/2018
  * DeadLock.java
  */
 import java.io.*;
 import java.util.*;
 public class DeadLock 
 {
+    // main
     public static void main(String[] args)
     {
         int count = 0;
         int numRe = 0;
         char[][] matrix = new char[1000][1000];
+        
+        //read file and split by ","
         try 
         {
-            File file = new File("NoDeadlock/TestCase05.txt");
+            File file = new File("Deadlock/TestCase02.txt");
             StringBuffer stringBuffer;
             try (FileReader fileReader = new FileReader(file)) 
             {
@@ -36,26 +41,29 @@ public class DeadLock
                     numRe = mat.length;
                 }
             }
-            System.out.println("Contents of file:");
-            System.out.println(stringBuffer.toString());
+            // for displaying contents of file.
+//            System.out.println("Contents of file:");
+//            System.out.println(stringBuffer.toString());
         } 
         catch (IOException e) 
         {
             e.printStackTrace();
         }
+        
+        // find size
         int sizeE = 0;
         for(int i = 0; i<count ; i++)
         {
             for(int j = 0 ; j<numRe ; j++)
             {
-                System.out.print(matrix[i][j] + " ");
                 if(matrix[i][j] != '0')
                 {
                     sizeE++;
                 }
             }
-            System.out.println();
         }
+        
+        // prepare everything that need to use for creating list of all nodes and list of all edges by calling CreateItem function
         HashMap NodeEdge = new HashMap();
         NodeEdge = CreateItem(matrix,count,numRe,sizeE); 
         Set set = NodeEdge.entrySet();
@@ -69,11 +77,22 @@ public class DeadLock
             edge = (String[]) me.getValue();
         }
         
+        // call checkDeadLock function to check whether it has deadlock or not.
         checkDeadLock(node,edge);
     }
     
+    
+    /**
+     * This is the method for creating list of all nodes and list of all edges
+     * @param matrix
+     * @param sizeP
+     * @param sizeR
+     * @param sizeE
+     * @return 
+     */
     public static HashMap CreateItem(char[][] matrix,int sizeP,int sizeR,int sizeE)
     {
+        // create nodes and keep them in array.
         String[] node = new String[sizeP+sizeR];
         int count = 0;
         for(int i = 0; i<sizeP ; i++)
@@ -88,21 +107,23 @@ public class DeadLock
             node[count] = temp+Integer.toString(j);
             count++;
         }
-        System.out.println();
-        System.out.print("N = [");
-        for(int i = 0; i<node.length  ; i++)
-        {
-            if(i!=node.length-1)
-            {
-                System.out.print(node[i] + ", ");
-            }
-            else
-            {
-                System.out.print(node[i]);
-            }
-        }
-        System.out.println("]");
         
+        // for display list of all nodes
+//        System.out.print("N = [");
+//        for(int i = 0; i<node.length  ; i++)
+//        {
+//            if(i!=node.length-1)
+//            {
+//                System.out.print(node[i] + ", ");
+//            }
+//            else
+//            {
+//                System.out.print(node[i]);
+//            }
+//        }
+//        System.out.println("]");
+        
+        // create edges and keep them in array
         String[] edge = new String[sizeE];
         int countE = 0;
         int countN = 0;
@@ -126,25 +147,34 @@ public class DeadLock
             }
         }
         
-        System.out.println();
-        System.out.print("Edge = [");
-        for(int i = 0; i < sizeE ; i++)
-        {
-            if(i != sizeE -1)
-            {
-                System.out.print(edge[i]+", ");
-            }
-            else
-            {
-                System.out.print(edge[i]);
-            }
-        }
-        System.out.println("]");
+        // for displaying list of all esges
+//        System.out.println();
+//        System.out.print("Edge = [");
+//        for(int i = 0; i < sizeE ; i++)
+//        {
+//            if(i != sizeE -1)
+//            {
+//                System.out.print(edge[i]+", ");
+//            }
+//            else
+//            {
+//                System.out.print(edge[i]);
+//            }
+//        }
+//        System.out.println("]");
+
+        // return list of all nodes and list of all edges in form of HashMap
         HashMap NodeEdge = new HashMap();
         NodeEdge.put(node, edge);
         return NodeEdge;
     }
     
+    
+    /**
+     * This is a method that is used for detecting whether or not the given system contains a deadlock.
+     * @param node
+     * @param e 
+     */
     public static void checkDeadLock(String[] node, String[] e)
     {
         String N;
@@ -152,40 +182,46 @@ public class DeadLock
         Boolean check = false;
         Boolean deadend = true;
         HashMap edge = new HashMap();
+        // create list L
         List L = new ArrayList();
         String endLoop = "";
         
-        // unmark all edge
+        // unmark all edges
         for(int j = 0 ; j<e.length ; j++)
         {
             edge.put(e[j], "0");
         }
         int i = 0;
+        
+        // loop until reaching the lastest node or found deadlock
         while(i<node.length && check == false)
         {     
+            // initialize node N
             N = node[i];
-            System.out.println();
-            System.out.println("---------------------------------");
-            System.out.println("STARTING FROM " + N);
-            //System.out.println(L + " " + N);
+//            System.out.println();
+//            System.out.println("---------------------------------");
+//            System.out.println("STARTING FROM " + N);
+
+            // loop until reaching dead end of N
             while(true)
             {
                 String dest = "";
-                //System.out.println(N);
+//                System.out.println(N);
+                // check if N appears in L two times.
                 if(!L.contains(N))
                 {
-                    if(!"".equals(N))
-                    {
-                        deadend = true;
-                        L.add(N);
-                    }
-                    System.out.println("L = " + L);
+                    deadend = true;
+                    // add N to the end of L
+                    L.add(N);
+//                    System.out.println("L = " + L);
                     countL++;
                     Iterator it = edge.entrySet().iterator();
+                    // loop for checking if there any unmarked outgoing edges from N
                     while(it.hasNext())
                     {
                         Map.Entry pair = (Map.Entry)it.next();
                         String[] SrcDest = pair.getKey().toString().split("-->");
+                        // if there is any unmarked outgoing edge from N, pick an unmarked outgoing edge and mark it.
                         if(SrcDest[0].equals(N) && pair.getValue().equals("0"))
                         {
                             dest = SrcDest[1];
@@ -195,19 +231,22 @@ public class DeadLock
                         }
                     }
                 }
+                // if there is deadlock, break the loop.
                 else 
                 {
                     System.out.println();
-                    System.out.println("A DeadLock is detected.");
                     check = true; 
                     endLoop = N;
                     L.add(endLoop);
+//                    System.out.println("L = " + L);
                     break;
                 }
+                // follow that edge to the new current node and set that node into N
                 if(deadend == false)
                 {
                     N = dest;
                 }
+                // if we reach the dead end, we remove it and go back to previous node and make that one to become new N
                 else
                 {
                     if(L.size()-2 >= 0)
@@ -226,15 +265,18 @@ public class DeadLock
                 }
             }
             i++;
+            // when starting with new node, reunmarking all edges
             for(int p =0 ; p <e.length ; p++)
             {
                 edge.put(e[p], "0");
             }
         }
-        System.out.println();
+//        System.out.println();
+        
+        // if deadlock is detected, print the cycle
         if(check == true)
         {
-            System.out.println("L = " + L);
+            System.out.println("A DeadLock is detected.");
             System.out.print("The program find this cycle: ");
             for(int k = L.indexOf(endLoop) ; k<L.size() ; k++)
             {
@@ -248,6 +290,7 @@ public class DeadLock
                 }
             }
         }
+        // if No deadlock is detected., it will display that the program find 0 cycle.
         else
         {
             System.out.println("No deadlock is detected.");
