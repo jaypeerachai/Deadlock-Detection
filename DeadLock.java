@@ -65,6 +65,7 @@ public class DeadLock
         
         // prepare everything that need to use for creating list of all nodes and list of all edges by calling CreateItem function
         HashMap NodeEdge = new HashMap();
+        // call CreateItem function to create list of all nodes and list of all edges
         NodeEdge = CreateItem(matrix,count,numRe,sizeE); 
         Set set = NodeEdge.entrySet();
         Iterator i = set.iterator();
