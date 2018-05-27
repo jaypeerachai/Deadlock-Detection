@@ -15,7 +15,7 @@ public class DeadLock
         char[][] matrix = new char[1000][1000];
         try 
         {
-            File file = new File("Deadlock/TestCase02.txt");
+            File file = new File("NoDeadlock/TestCase05.txt");
             StringBuffer stringBuffer;
             try (FileReader fileReader = new FileReader(file)) 
             {
@@ -148,7 +148,9 @@ public class DeadLock
     public static void checkDeadLock(String[] node, String[] e)
     {
         String N;
+        int countL = 0;
         Boolean check = false;
+        Boolean deadend = true;
         HashMap edge = new HashMap();
         List L = new ArrayList();
         String endLoop = "";
@@ -156,31 +158,39 @@ public class DeadLock
         // unmark all edge
         for(int j = 0 ; j<e.length ; j++)
         {
-            edge.put(e[j], 0);
+            edge.put(e[j], "0");
         }
         int i = 0;
         while(i<node.length && check == false)
         {     
             N = node[i];
+            System.out.println();
+            System.out.println("---------------------------------");
+            System.out.println("STARTING FROM " + N);
             //System.out.println(L + " " + N);
             while(true)
             {
                 String dest = "";
-                System.out.println(N);
-                System.out.println("L = " + L);
+                //System.out.println(N);
                 if(!L.contains(N))
                 {
-                    L.add(N);
+                    if(!"".equals(N))
+                    {
+                        deadend = true;
+                        L.add(N);
+                    }
+                    System.out.println("L = " + L);
+                    countL++;
                     Iterator it = edge.entrySet().iterator();
                     while(it.hasNext())
                     {
                         Map.Entry pair = (Map.Entry)it.next();
                         String[] SrcDest = pair.getKey().toString().split("-->");
-                        if(SrcDest[0].equals(N) && pair.getValue().equals(0))
+                        if(SrcDest[0].equals(N) && pair.getValue().equals("0"))
                         {
                             dest = SrcDest[1];
-                            //System.out.println(pair.getKey().toString().substring(0, 2) + " " + pair.getKey().toString().substring(5,7));
-                            pair.setValue('1');
+                            pair.setValue("1");
+                            deadend = false;
                             break;
                         }
                     }
@@ -188,28 +198,60 @@ public class DeadLock
                 else 
                 {
                     System.out.println();
-                    System.out.println("A DeadLock is detected");
+                    System.out.println("A DeadLock is detected.");
                     check = true; 
                     endLoop = N;
                     L.add(endLoop);
                     break;
                 }
-                N = dest;
+                if(deadend == false)
+                {
+                    N = dest;
+                }
+                else
+                {
+                    if(L.size()-2 >= 0)
+                    {
+                        System.out.println("DEAD END of " + N);
+                        System.out.println("");
+                        L.remove(L.size()-1);
+                        N = L.get(L.size()-1).toString();
+                        L.remove(L.size()-1);
+                    }
+                    else
+                    {
+                        L.remove(L.size()-1);
+                        break;
+                    }
+                }
             }
             i++;
+            for(int p =0 ; p <e.length ; p++)
+            {
+                edge.put(e[p], "0");
+            }
         }
-        System.out.println("L = " + L);
-        System.out.print("The program find this cycle: ");
-        for(int k = L.indexOf(endLoop) ; k<L.size() ; k++)
+        System.out.println();
+        if(check == true)
         {
-            if(k != L.size()-1)
+            System.out.println("L = " + L);
+            System.out.print("The program find this cycle: ");
+            for(int k = L.indexOf(endLoop) ; k<L.size() ; k++)
             {
-                System.out.print(L.get(k) + " -> ");
+                if(k != L.size()-1)
+                {
+                    System.out.print(L.get(k) + " -> ");
+                }
+                else
+                {
+                    System.out.println(L.get(k));
+                }
             }
-            else
-            {
-                System.out.println(L.get(k));
-            }
+        }
+        else
+        {
+            System.out.println("No deadlock is detected.");
+            System.out.println("The program find 0 cycle.");
         }
     }
     
