@@ -1,2 +1,2 @@
 # Deadlock
-Created by Jay&Beauty
+Created by Jay
